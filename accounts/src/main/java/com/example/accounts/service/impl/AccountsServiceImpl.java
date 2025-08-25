@@ -1,7 +1,7 @@
 package com.example.accounts.service.impl;
 
+import com.example.accounts.config.FeatureFlags;
 import com.example.accounts.constants.AccountsConstants;
-import com.example.accounts.constants.ProfileConstants;
 import com.example.accounts.dto.AccountsDto;
 import com.example.accounts.dto.CustomerDto;
 import com.example.accounts.entity.Accounts;
@@ -15,10 +15,8 @@ import com.example.accounts.repository.CustomerRepository;
 import com.example.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
@@ -27,9 +25,15 @@ import java.util.Random;
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
 
-    private AccountsRepository accountsRepository;
-    private CustomerRepository customerRepository;
-    private Environment environment;
+    //private, final: make dependency injections safe, immutable, and thread-safe
+    //Foo foo: creating slot in memory(variable) for dependency injection
+    private final AccountsRepository accountsRepository;
+    private final CustomerRepository customerRepository;
+    private final FeatureFlags featureFlags;
+    //@AllArgsConstructor is used to inject dependencies; this.foo = foo; (assignment) this would be inside the constructor if there were no @AllArgsConstructor
+    //Spring passes in beans into constructor via parameters; they are assigned to private final fields for encapsulation(no modifying outside the class) and immutability
+    //no new Class() is used to create dependencies; Spring provides the existing beans
+
 
     @Override
     @Transactional
@@ -83,9 +87,8 @@ public class AccountsServiceImpl implements IAccountsService {
     @Override
     @Transactional
     public void deleteAccount(String mobileNumber) {
-        //set request param mobileNumber to "trigger" to simulate unexpected error
-        if ("trigger".equals(mobileNumber) &&
-                Arrays.asList(environment.getActiveProfiles()).contains(ProfileConstants.DEV)) {
+        if (FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION.equals(mobileNumber) &&
+                featureFlags.isDevFeatureEnabled(FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION)) {
             throw new RuntimeException("Simulated unexpected error");
         }
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
