@@ -88,7 +88,7 @@ public class AccountsServiceImpl implements IAccountsService {
     @Transactional
     public void deleteAccount(String mobileNumber) {
         if (FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION.equals(mobileNumber) &&
-                featureFlags.isDevFeatureEnabled(FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION)) {
+                featureFlags.isFeatureEnabled(FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION)) {
             throw new RuntimeException("Simulated unexpected error");
         }
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
