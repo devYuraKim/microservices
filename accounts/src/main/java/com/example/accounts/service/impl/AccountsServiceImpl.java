@@ -51,7 +51,7 @@ public class AccountsServiceImpl implements IAccountsService {
         return customerDto;
     }
 
-    //TODO: refactor updateAccount method to void return type and remove isUpdated variable
+    //TODO: refactor updateAccount method (branch refactor/update-account-method)
     @Override
     @Transactional
     public boolean updateAccount(CustomerDto customerDto) {
@@ -62,23 +62,14 @@ public class AccountsServiceImpl implements IAccountsService {
             Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
                     () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
             );
-            //AccountsMapper.mapToAccounts(accountsDto, accounts);
-            if (accountsDto.getAccountType() != null) {
-                accounts.setAccountType(accountsDto.getAccountType());
-            }
-            if (accountsDto.getBranchAddress() != null) {
-                accounts.setBranchAddress(accountsDto.getBranchAddress());
-            }
+            AccountsMapper.mapToAccounts(accountsDto);
             accounts = accountsRepository.save(accounts);
 
             Long customerId = accounts.getCustomerId();
             Customer customer = customerRepository.findById(customerId).orElseThrow(
                     () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
             );
-            //CustomerMapper.mapToCustomer(customerDto,customer);
-            if (customerDto.getEmail() != null) {
-                customer.setEmail(customerDto.getEmail());
-            }
+            CustomerMapper.mapToCustomer(customerDto);
             customerRepository.save(customer);
             isUpdated = true;
         }
