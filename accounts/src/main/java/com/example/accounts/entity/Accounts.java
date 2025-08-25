@@ -2,13 +2,12 @@ package com.example.accounts.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+@ToString(callSuper = true) //include BaseEntity fields
+//@ToString //only this class fields
 public class Accounts extends BaseEntity {
 
     private Long customerId;
