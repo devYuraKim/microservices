@@ -3,6 +3,7 @@ package com.example.accounts.controller;
 import com.example.accounts.constants.AccountsConstants;
 import com.example.accounts.dto.CustomerDto;
 import com.example.accounts.dto.ResponseDto;
+import com.example.accounts.exception.ResourceNotFoundException;
 import com.example.accounts.service.IAccountsService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,7 @@ public class AccountsController {
                 .body(customerDto);
     }
 
+    //TODO: remove boolean flag and handle exception with try-catch
     @PostMapping("/update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
 
@@ -57,4 +59,18 @@ public class AccountsController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam String mobileNumber) {
+        try {
+            iAccountsService.deleteAccount(mobileNumber);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDto(AccountsConstants.STATUS_404, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                    .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.accounts.service.impl;
 
 import com.example.accounts.constants.AccountsConstants;
+import com.example.accounts.constants.ProfileConstants;
 import com.example.accounts.dto.AccountsDto;
 import com.example.accounts.dto.CustomerDto;
 import com.example.accounts.entity.Accounts;
@@ -14,9 +15,10 @@ import com.example.accounts.repository.CustomerRepository;
 import com.example.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
@@ -27,6 +29,7 @@ public class AccountsServiceImpl implements IAccountsService {
 
     private AccountsRepository accountsRepository;
     private CustomerRepository customerRepository;
+    private Environment environment;
 
     @Override
     @Transactional
@@ -75,6 +78,22 @@ public class AccountsServiceImpl implements IAccountsService {
             isUpdated = true;
         }
         return  isUpdated;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(String mobileNumber) {
+        //set request param mobileNumber to "trigger" to simulate unexpected error
+        if ("trigger".equals(mobileNumber) &&
+                Arrays.asList(environment.getActiveProfiles()).contains(ProfileConstants.DEV)) {
+            throw new RuntimeException("Simulated unexpected error");
+        }
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        //Accounts are dependent on Customer - if there’s no account, it’s not an error
+        accountsRepository.deleteByCustomerId(customer.getCustomerId());
+        customerRepository.deleteById(customer.getCustomerId());
     }
 
     /**
