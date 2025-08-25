@@ -20,7 +20,7 @@ public class CustomerMapper {
         return dto;
     }
 
-    public static Customer mapToCustomer(CustomerDto dto, Customer entity) {
+    public static Customer mapToCustomerEntity(CustomerDto dto, Customer entity) {
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
         entity.setMobileNumber(dto.getMobileNumber());

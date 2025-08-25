@@ -37,7 +37,7 @@ public class AccountsServiceImpl implements IAccountsService {
             throw new CustomerAlreadyExistsException("Customer already registered with given mobile number "
                     + customerDto.getMobileNumber());
         }
-        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
+        Customer customer = CustomerMapper.mapToCustomerEntity(customerDto, new Customer());
         Customer savedCustomer = customerRepository.save(customer);
         accountsRepository.save(createNewAccount(savedCustomer));
     }
@@ -72,7 +72,7 @@ public class AccountsServiceImpl implements IAccountsService {
             Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
                     () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
             );
-            AccountsMapper.mapToAccounts(accountsDto, accounts);
+            AccountsMapper.mapToAccountsEntity(accountsDto, accounts);
             accounts = accountsRepository.save(accounts);
             // Repeated null checks for each field → consider a mapper that applies partial updates.
             // This keeps business logic consistent and reduces boilerplate.
@@ -84,7 +84,7 @@ public class AccountsServiceImpl implements IAccountsService {
             Customer customer = customerRepository.findById(customerId).orElseThrow(
                     () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
             );
-            CustomerMapper.mapToCustomer(customerDto, customer);
+            CustomerMapper.mapToCustomerEntity(customerDto, customer);
             customerRepository.save(customer);
             // ✅ Delegate update logic to mapper
             // CustomerMapper.updateCustomer(customerDto, customer);
