@@ -80,17 +80,12 @@ public class AccountsServiceImpl implements IAccountsService {
     @Override
     @Transactional
     public void deleteAccount(String mobileNumber) {
-
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
-        Long customerId = customer.getCustomerId();
-        Accounts accounts = accountsRepository.findByCustomerId(customerId).orElseThrow(
-                () -> new ResourceNotFoundException("Accounts", "customerId", customerId.toString())
-        );
-        accountsRepository.delete(accounts);
-        customerRepository.delete(customer);
-
+        //Accounts are dependent on Customer - if there’s no account, it’s not an error
+        accountsRepository.deleteByCustomerId(customer.getCustomerId());
+        customerRepository.deleteById(customer.getCustomerId());
     }
 
     /**
