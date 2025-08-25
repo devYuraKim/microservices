@@ -80,6 +80,10 @@ public class AccountsServiceImpl implements IAccountsService {
     @Override
     @Transactional
     public void deleteAccount(String mobileNumber) {
+        //set request param mobileNumber to "trigger" to simulate unexpected error
+        if ("trigger".equals(mobileNumber)) {
+            throw new RuntimeException("Simulated unexpected error");
+        }
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
