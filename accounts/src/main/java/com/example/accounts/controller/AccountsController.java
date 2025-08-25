@@ -42,6 +42,7 @@ public class AccountsController {
                 .body(customerDto);
     }
 
+    //TODO: remove boolean flag and handle exception with try-catch
     @PostMapping("/update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
 
@@ -59,11 +60,14 @@ public class AccountsController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam String mobileNumber){
-
-        iAccountsService.deleteAccount(mobileNumber);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
+        try {
+            iAccountsService.deleteAccount(mobileNumber);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                    .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
+        }
     }
 
 
