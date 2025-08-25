@@ -13,12 +13,14 @@ import com.example.accounts.repository.AccountsRepository;
 import com.example.accounts.repository.CustomerRepository;
 import com.example.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
@@ -35,7 +37,7 @@ public class AccountsServiceImpl implements IAccountsService {
             throw new CustomerAlreadyExistsException("Customer already registered with given mobile number "
                     + customerDto.getMobileNumber());
         }
-        Customer customer = CustomerMapper.mapToCustomer(customerDto);
+        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
         Customer savedCustomer = customerRepository.save(customer);
         accountsRepository.save(createNewAccount(savedCustomer));
     }
@@ -46,8 +48,8 @@ public class AccountsServiceImpl implements IAccountsService {
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber));
         Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
                 () -> new ResourceNotFoundException("Accounts", "customerId", customer.getCustomerId().toString()));
-        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer);
-        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts));
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
         return customerDto;
     }
 
@@ -57,25 +59,23 @@ public class AccountsServiceImpl implements IAccountsService {
     public boolean updateAccount(CustomerDto customerDto) {
         boolean isUpdated = false;
         AccountsDto accountsDto = customerDto.getAccountsDto();
-
         if(accountsDto !=null ){
             Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
                     () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
             );
-            AccountsMapper.mapToAccounts(accountsDto);
+            AccountsMapper.mapToAccounts(accountsDto, accounts);
             accounts = accountsRepository.save(accounts);
 
             Long customerId = accounts.getCustomerId();
             Customer customer = customerRepository.findById(customerId).orElseThrow(
                     () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
             );
-            CustomerMapper.mapToCustomer(customerDto);
+            CustomerMapper.mapToCustomer(customerDto, customer);
             customerRepository.save(customer);
             isUpdated = true;
         }
         return  isUpdated;
     }
-
 
     /**
      * @param customer - Customer Object
