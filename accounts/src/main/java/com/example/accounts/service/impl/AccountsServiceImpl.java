@@ -77,6 +77,22 @@ public class AccountsServiceImpl implements IAccountsService {
         return  isUpdated;
     }
 
+    @Override
+    @Transactional
+    public void deleteAccount(String mobileNumber) {
+
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        Long customerId = customer.getCustomerId();
+        Accounts accounts = accountsRepository.findByCustomerId(customerId).orElseThrow(
+                () -> new ResourceNotFoundException("Accounts", "customerId", customerId.toString())
+        );
+        accountsRepository.delete(accounts);
+        customerRepository.delete(customer);
+
+    }
+
     /**
      * @param customer - Customer Object
      * @return the new account details
@@ -90,4 +106,6 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setBranchAddress(AccountsConstants.ADDRESS);
         return newAccount;
     }
+
+
 }

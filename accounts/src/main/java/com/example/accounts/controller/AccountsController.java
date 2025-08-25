@@ -57,4 +57,14 @@ public class AccountsController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam String mobileNumber){
+
+        iAccountsService.deleteAccount(mobileNumber);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
+    }
+
+
 }
