@@ -51,18 +51,27 @@ public class AccountsServiceImpl implements IAccountsService {
         return customerDto;
     }
 
-    //TODO: refactor updateAccount method to void return type and remove isUpdated variable
+    //TODO:
+    // -convert return type to void
+    // -remove 'isUpdated' variable
+    // -delegate repetitive field updates to mappers
+    // -use guard clause pattern and avoid nesting
     @Override
     @Transactional
     public boolean updateAccount(CustomerDto customerDto) {
+        // Consider returning void or the updated entity instead of a boolean.
+        // The `isUpdated` variable doesn’t add real value since failure already throws.
         boolean isUpdated = false;
         AccountsDto accountsDto = customerDto.getAccountsDto();
 
         if(accountsDto !=null ){
+            // Guard clause pattern – bail early - could simplify readability:
+            // if (accountsDto == null) { return; }
+            // This reduces nesting and makes intent clearer.
             Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
                     () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
             );
-            //AccountsMapper.mapToAccounts(accountsDto, accounts);
+
             if (accountsDto.getAccountType() != null) {
                 accounts.setAccountType(accountsDto.getAccountType());
             }
@@ -70,19 +79,28 @@ public class AccountsServiceImpl implements IAccountsService {
                 accounts.setBranchAddress(accountsDto.getBranchAddress());
             }
             accounts = accountsRepository.save(accounts);
+            // Repeated null checks for each field → consider a mapper that applies partial updates.
+            // This keeps business logic consistent and reduces boilerplate.
+            // ✅ Delegate update logic to mapper
+            // AccountsMapper.updateAccounts(accountsDto, accounts);
+            // accountsRepository.save(accounts);
 
             Long customerId = accounts.getCustomerId();
             Customer customer = customerRepository.findById(customerId).orElseThrow(
                     () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
             );
-            //CustomerMapper.mapToCustomer(customerDto,customer);
+
             if (customerDto.getEmail() != null) {
                 customer.setEmail(customerDto.getEmail());
             }
             customerRepository.save(customer);
+            // ✅ Delegate update logic to mapper
+            // CustomerMapper.updateCustomer(customerDto, customer);
+            // customerRepository.save(customer);
             isUpdated = true;
         }
         return  isUpdated;
+        // Remove isUpdated → method either updates or throws.
     }
 
 
