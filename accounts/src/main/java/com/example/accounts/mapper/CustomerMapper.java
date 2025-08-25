@@ -5,20 +5,26 @@ import com.example.accounts.entity.Customer;
 
 public class CustomerMapper {
 
-    public static CustomerDto mapToCustomerDto(Customer customer) {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setName(customer.getName());
-        customerDto.setEmail(customer.getEmail());
-        customerDto.setMobileNumber(customer.getMobileNumber());
-        return customerDto;
+    // Private constructor prevents instantiation
+    private CustomerMapper() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
-    public static Customer mapToCustomer(CustomerDto customerDto) {
-        Customer customer = new Customer();
-        customer.setName(customerDto.getName());
-        customer.setEmail(customerDto.getEmail());
-        customer.setMobileNumber(customerDto.getMobileNumber());
-        return customer;
+    // Creating new instances:
+    // - DTO: safe for all CRUD operations
+    // - Entity: safe only for Create (C); for Read, Update, Delete, use existing instances
+    public static CustomerDto mapToCustomerDto(Customer entity, CustomerDto dto) {
+        dto.setName(entity.getName());
+        dto.setEmail(entity.getEmail());
+        dto.setMobileNumber(entity.getMobileNumber());
+        return dto;
+    }
+
+    public static Customer mapToCustomer(CustomerDto dto, Customer entity) {
+        entity.setName(dto.getName());
+        entity.setEmail(dto.getEmail());
+        entity.setMobileNumber(dto.getMobileNumber());
+        return entity;
     }
 
 }
