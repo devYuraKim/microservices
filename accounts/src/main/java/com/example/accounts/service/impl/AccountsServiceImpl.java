@@ -13,12 +13,14 @@ import com.example.accounts.repository.AccountsRepository;
 import com.example.accounts.repository.CustomerRepository;
 import com.example.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
@@ -35,7 +37,7 @@ public class AccountsServiceImpl implements IAccountsService {
             throw new CustomerAlreadyExistsException("Customer already registered with given mobile number "
                     + customerDto.getMobileNumber());
         }
-        Customer customer = CustomerMapper.mapToCustomer(customerDto);
+        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
         Customer savedCustomer = customerRepository.save(customer);
         accountsRepository.save(createNewAccount(savedCustomer));
     }
@@ -46,8 +48,8 @@ public class AccountsServiceImpl implements IAccountsService {
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber));
         Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
                 () -> new ResourceNotFoundException("Accounts", "customerId", customer.getCustomerId().toString()));
-        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer);
-        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts));
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
         return customerDto;
     }
 
@@ -63,7 +65,6 @@ public class AccountsServiceImpl implements IAccountsService {
         // The `isUpdated` variable doesn’t add real value since failure already throws.
         boolean isUpdated = false;
         AccountsDto accountsDto = customerDto.getAccountsDto();
-
         if(accountsDto !=null ){
             // Guard clause pattern – bail early - could simplify readability:
             // if (accountsDto == null) { return; }
@@ -71,13 +72,7 @@ public class AccountsServiceImpl implements IAccountsService {
             Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
                     () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
             );
-
-            if (accountsDto.getAccountType() != null) {
-                accounts.setAccountType(accountsDto.getAccountType());
-            }
-            if (accountsDto.getBranchAddress() != null) {
-                accounts.setBranchAddress(accountsDto.getBranchAddress());
-            }
+            AccountsMapper.mapToAccounts(accountsDto, accounts);
             accounts = accountsRepository.save(accounts);
             // Repeated null checks for each field → consider a mapper that applies partial updates.
             // This keeps business logic consistent and reduces boilerplate.
@@ -89,10 +84,7 @@ public class AccountsServiceImpl implements IAccountsService {
             Customer customer = customerRepository.findById(customerId).orElseThrow(
                     () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
             );
-
-            if (customerDto.getEmail() != null) {
-                customer.setEmail(customerDto.getEmail());
-            }
+            CustomerMapper.mapToCustomer(customerDto, customer);
             customerRepository.save(customer);
             // ✅ Delegate update logic to mapper
             // CustomerMapper.updateCustomer(customerDto, customer);
@@ -102,7 +94,6 @@ public class AccountsServiceImpl implements IAccountsService {
         return  isUpdated;
         // Remove isUpdated → method either updates or throws.
     }
-
 
     /**
      * @param customer - Customer Object

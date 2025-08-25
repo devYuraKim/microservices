@@ -10,20 +10,21 @@ public class CustomerMapper {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static CustomerDto mapToCustomerDto(Customer customer) {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setName(customer.getName());
-        customerDto.setEmail(customer.getEmail());
-        customerDto.setMobileNumber(customer.getMobileNumber());
-        return customerDto;
+    // Creating new instances:
+    // - DTO: safe for all CRUD operations
+    // - Entity: safe only for Create (C); for Read, Update, Delete, use existing instances
+    public static CustomerDto mapToCustomerDto(Customer entity, CustomerDto dto) {
+        dto.setName(entity.getName());
+        dto.setEmail(entity.getEmail());
+        dto.setMobileNumber(entity.getMobileNumber());
+        return dto;
     }
 
-    public static Customer mapToCustomer(CustomerDto customerDto) {
-        Customer customer = new Customer();
-        customer.setName(customerDto.getName());
-        customer.setEmail(customerDto.getEmail());
-        customer.setMobileNumber(customerDto.getMobileNumber());
-        return customer;
+    public static Customer mapToCustomer(CustomerDto dto, Customer entity) {
+        entity.setName(dto.getName());
+        entity.setEmail(dto.getEmail());
+        entity.setMobileNumber(dto.getMobileNumber());
+        return entity;
     }
 
     public static void updateCustomer(CustomerDto dto, Customer entity) {
