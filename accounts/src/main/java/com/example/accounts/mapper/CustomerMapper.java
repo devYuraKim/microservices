@@ -5,6 +5,11 @@ import com.example.accounts.entity.Customer;
 
 public class CustomerMapper {
 
+    // Private constructor prevents instantiation
+    private CustomerMapper() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static CustomerDto mapToCustomerDto(Customer customer) {
         CustomerDto customerDto = new CustomerDto();
         customerDto.setName(customer.getName());
@@ -19,6 +24,13 @@ public class CustomerMapper {
         customer.setEmail(customerDto.getEmail());
         customer.setMobileNumber(customerDto.getMobileNumber());
         return customer;
+    }
+
+    public static void updateCustomer(CustomerDto dto, Customer entity) {
+        if (dto.getEmail() != null) {
+            entity.setEmail(dto.getEmail());
+        }
+        // 🔮 Add more fields as needed
     }
 
 }
