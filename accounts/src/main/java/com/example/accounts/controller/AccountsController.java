@@ -3,17 +3,13 @@ package com.example.accounts.controller;
 import com.example.accounts.constants.AccountsConstants;
 import com.example.accounts.dto.CustomerDto;
 import com.example.accounts.dto.ResponseDto;
-import com.example.accounts.exception.ResourceNotFoundException;
 import com.example.accounts.service.IAccountsService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.logging.Logger;
 
 @Slf4j
 @RestController
@@ -25,7 +21,7 @@ public class AccountsController {
 
     private ResponseEntity<ResponseDto> buildSuccessResponse(HttpStatus httpStatus, String status, String message){
         return ResponseEntity.status(httpStatus).body(new ResponseDto(status, message));
-    };
+    }
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto){
