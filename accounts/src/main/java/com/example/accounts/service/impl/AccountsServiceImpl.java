@@ -72,8 +72,7 @@ public class AccountsServiceImpl implements IAccountsService {
                 () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
         );
 
-        // TODO: customize update logic per business rules instead of updating all fields
-        // AccountsMapper.updateAccounts(accountsDto, accounts);
+        // NOTE: customize update logic per business rules instead of updating all fields
         AccountsMapper.mapToAccountsEntity(accountsDto, accounts);
         accounts = accountsRepository.save(accounts);
 
@@ -81,8 +80,7 @@ public class AccountsServiceImpl implements IAccountsService {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
         );
-        // TODO: customize update logic per business rules instead of updating all fields
-        // CustomerMapper.updateCustomer(customerDto, customer);
+        // NOTE: customize update logic per business rules instead of updating all fields
         CustomerMapper.mapToCustomerEntity(customerDto, customer);
         customerRepository.save(customer);
     }

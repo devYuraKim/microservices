@@ -27,11 +27,4 @@ public class CustomerMapper {
         return entity;
     }
 
-    public static void updateCustomer(CustomerDto dto, Customer entity) {
-        if (dto.getEmail() != null) {
-            entity.setEmail(dto.getEmail());
-        }
-        // 🔮 Add more fields as needed
-    }
-
 }
