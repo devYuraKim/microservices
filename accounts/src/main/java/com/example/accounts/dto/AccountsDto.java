@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class AccountsDto {
 
+    // NOTE: Validation constraints must be applied to compatible data types
     //@NotEmpty(message="Account number is required")
     //@Pattern(regexp = "^\\d{10}$", message="Account number must be 10 digits")
     @NotNull(message="Account number is required")
