@@ -59,9 +59,6 @@ public class AccountsServiceImpl implements IAccountsService {
         return customerDto;
     }
 
-    //TODO:
-    // -delegate repetitive field updates to mappers
-    // -use guard clause pattern and avoid nesting
     @Override
     @Transactional
     public void updateAccount(CustomerDto customerDto) {
