@@ -34,7 +34,6 @@ public class AccountsServiceImpl implements IAccountsService {
     //Spring passes in beans into constructor via parameters; they are assigned to private final fields for encapsulation(no modifying outside the class) and immutability
     //no new Class() is used to create dependencies; Spring provides the existing beans
 
-
     @Override
     @Transactional
     public void createAccount(CustomerDto customerDto) {
@@ -61,45 +60,34 @@ public class AccountsServiceImpl implements IAccountsService {
     }
 
     //TODO:
-    // -convert return type to void
-    // -remove 'isUpdated' variable
     // -delegate repetitive field updates to mappers
     // -use guard clause pattern and avoid nesting
     @Override
     @Transactional
-    public boolean updateAccount(CustomerDto customerDto) {
-        // Consider returning void or the updated entity instead of a boolean.
-        // The `isUpdated` variable doesn’t add real value since failure already throws.
-        boolean isUpdated = false;
+    public void updateAccount(CustomerDto customerDto) {
         AccountsDto accountsDto = customerDto.getAccountsDto();
-        if(accountsDto !=null ){
-            // Guard clause pattern – bail early - could simplify readability:
-            // if (accountsDto == null) { return; }
-            // This reduces nesting and makes intent clearer.
-            Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
-                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
-            );
-            AccountsMapper.mapToAccountsEntity(accountsDto, accounts);
-            accounts = accountsRepository.save(accounts);
-            // Repeated null checks for each field → consider a mapper that applies partial updates.
-            // This keeps business logic consistent and reduces boilerplate.
-            // ✅ Delegate update logic to mapper
-            // AccountsMapper.updateAccounts(accountsDto, accounts);
-            // accountsRepository.save(accounts);
-
-            Long customerId = accounts.getCustomerId();
-            Customer customer = customerRepository.findById(customerId).orElseThrow(
-                    () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
-            );
-            CustomerMapper.mapToCustomerEntity(customerDto, customer);
-            customerRepository.save(customer);
-            // ✅ Delegate update logic to mapper
-            // CustomerMapper.updateCustomer(customerDto, customer);
-            // customerRepository.save(customer);
-            isUpdated = true;
+        // Guard clause pattern: reduces nesting and makes intent clearer.
+        // Input validation: prevents null pointer exceptions
+        if (accountsDto == null) {
+            throw new IllegalArgumentException("AccountsDto must not be null");
         }
-        return  isUpdated;
-        // Remove isUpdated → method either updates or throws.
+        Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
+        );
+
+        // TODO: customize update logic per business rules instead of updating all fields
+        // AccountsMapper.updateAccounts(accountsDto, accounts);
+        AccountsMapper.mapToAccountsEntity(accountsDto, accounts);
+        accounts = accountsRepository.save(accounts);
+
+        Long customerId = accounts.getCustomerId();
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
+        );
+        // TODO: customize update logic per business rules instead of updating all fields
+        // CustomerMapper.updateCustomer(customerDto, customer);
+        CustomerMapper.mapToCustomerEntity(customerDto, customer);
+        customerRepository.save(customer);
     }
 
     @Override
