@@ -1,6 +1,5 @@
 package com.example.accounts.mapper;
 
-
 import com.example.accounts.dto.AccountsDto;
 import com.example.accounts.entity.Accounts;
 
@@ -28,16 +27,4 @@ public class AccountsMapper {
         return entity;
     }
 
-    public static void updateAccounts(AccountsDto dto, Accounts entity) {
-        if (dto.getAccountType() != null) {
-            entity.setAccountType(dto.getAccountType());
-        }
-        if (dto.getBranchAddress() != null) {
-            entity.setBranchAddress(dto.getBranchAddress());
-        }
-        // 🔮 Easy to extend later:
-        // if (dto.getSomeNewField() != null) {
-        //     entity.setSomeNewField(dto.getSomeNewField());
-        // }
-    }
 }

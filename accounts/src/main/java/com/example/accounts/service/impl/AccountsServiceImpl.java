@@ -34,7 +34,6 @@ public class AccountsServiceImpl implements IAccountsService {
     //Spring passes in beans into constructor via parameters; they are assigned to private final fields for encapsulation(no modifying outside the class) and immutability
     //no new Class() is used to create dependencies; Spring provides the existing beans
 
-
     @Override
     @Transactional
     public void createAccount(CustomerDto customerDto) {
@@ -60,28 +59,30 @@ public class AccountsServiceImpl implements IAccountsService {
         return customerDto;
     }
 
-    //TODO: refactor updateAccount method (branch refactor/update-account-method)
     @Override
     @Transactional
-    public boolean updateAccount(CustomerDto customerDto) {
-        boolean isUpdated = false;
+    public void updateAccount(CustomerDto customerDto) {
         AccountsDto accountsDto = customerDto.getAccountsDto();
-        if(accountsDto !=null ){
-            Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
-                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
-            );
-            AccountsMapper.mapToAccountsEntity(accountsDto, accounts);
-            accounts = accountsRepository.save(accounts);
-
-            Long customerId = accounts.getCustomerId();
-            Customer customer = customerRepository.findById(customerId).orElseThrow(
-                    () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
-            );
-            CustomerMapper.mapToCustomerEntity(customerDto, customer);
-            customerRepository.save(customer);
-            isUpdated = true;
+        // Guard clause pattern: reduces nesting and makes intent clearer.
+        // Input validation: prevents null pointer exceptions
+        if (accountsDto == null) {
+            throw new IllegalArgumentException("AccountsDto must not be null");
         }
-        return  isUpdated;
+        Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
+        );
+
+        // NOTE: customize update logic per business rules instead of updating all fields
+        AccountsMapper.mapToAccountsEntity(accountsDto, accounts);
+        accounts = accountsRepository.save(accounts);
+
+        Long customerId = accounts.getCustomerId();
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
+        );
+        // NOTE: customize update logic per business rules instead of updating all fields
+        CustomerMapper.mapToCustomerEntity(customerDto, customer);
+        customerRepository.save(customer);
     }
 
     @Override
