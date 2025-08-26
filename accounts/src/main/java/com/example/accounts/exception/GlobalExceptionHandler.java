@@ -27,6 +27,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponseDTO, httpStatus);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(
+            WebRequest webRequest, IllegalArgumentException exception
+    ) {
+        return buildErrorResponse(webRequest, exception, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGlobalException(WebRequest webRequest, Exception exception) {
         return buildErrorResponse(webRequest, exception, HttpStatus.INTERNAL_SERVER_ERROR);
