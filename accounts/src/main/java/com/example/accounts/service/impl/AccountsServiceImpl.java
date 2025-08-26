@@ -1,5 +1,6 @@
 package com.example.accounts.service.impl;
 
+import com.example.accounts.config.FeatureFlags;
 import com.example.accounts.constants.AccountsConstants;
 import com.example.accounts.dto.AccountsDto;
 import com.example.accounts.dto.CustomerDto;
@@ -16,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Optional;
 import java.util.Random;
 
@@ -25,8 +25,15 @@ import java.util.Random;
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
 
-    private AccountsRepository accountsRepository;
-    private CustomerRepository customerRepository;
+    //private, final: make dependency injections safe, immutable, and thread-safe
+    //Foo foo: creating slot in memory(variable) for dependency injection
+    private final AccountsRepository accountsRepository;
+    private final CustomerRepository customerRepository;
+    private final FeatureFlags featureFlags;
+    //@AllArgsConstructor is used to inject dependencies; this.foo = foo; (assignment) this would be inside the constructor if there were no @AllArgsConstructor
+    //Spring passes in beans into constructor via parameters; they are assigned to private final fields for encapsulation(no modifying outside the class) and immutability
+    //no new Class() is used to create dependencies; Spring provides the existing beans
+
 
     @Override
     @Transactional
@@ -93,6 +100,21 @@ public class AccountsServiceImpl implements IAccountsService {
         }
         return  isUpdated;
         // Remove isUpdated → method either updates or throws.
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(String mobileNumber) {
+        if (FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION.equals(mobileNumber) &&
+                featureFlags.isFeatureEnabled(FeatureFlags.DELETE_ACCOUNT_EXCEPTION_SIMULATION)) {
+            throw new RuntimeException("DELETE_ACCOUNT_EXCEPTION_SIMULATION");
+        }
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        //Accounts are dependent on Customer - if there’s no account, it’s not an error
+        accountsRepository.deleteByCustomerId(customer.getCustomerId());
+        customerRepository.deleteById(customer.getCustomerId());
     }
 
     /**
