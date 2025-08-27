@@ -1,5 +1,8 @@
+# Server
 server:
   port: 8080
+
+# Spring
 spring:
   profiles:
     active: dev
@@ -16,6 +19,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  logging:
-    level:
-      root: TRACE
+  output:
+    ansi:
+      enabled: always
+
+# Logging TRACE < DEBUG < INFO < WARN < ERROR
+logging:
+  level:
+    root: INFO
