@@ -52,7 +52,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExistsException(
             WebRequest webRequest, CustomerAlreadyExistsException exception
     ) {
-        return buildErrorResponse(webRequest, exception, HttpStatus.BAD_REQUEST);
+        return buildErrorResponse(webRequest, exception, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
