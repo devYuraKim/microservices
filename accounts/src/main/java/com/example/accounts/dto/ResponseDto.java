@@ -4,6 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * @deprecated Use {@link ApiResponseDto} instead.
+ * This class only handled success responses and is no longer needed.
+ * ApiResponseDto supports both success and error responses with a consistent structure.
+ */
 @Schema(
     name = "Success Response",
     description = "Schema to represent successful response")

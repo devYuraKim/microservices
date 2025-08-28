@@ -1,10 +1,10 @@
 package com.example.accounts.controller;
 
 import com.example.accounts.constants.AccountsConstants;
+import com.example.accounts.dto.ApiResponseDto;
 import com.example.accounts.dto.CustomerDto;
-import com.example.accounts.dto.ErrorResponseDto;
-import com.example.accounts.dto.ResponseDto;
 import com.example.accounts.service.IAccountsService;
+import com.example.accounts.util.ApiResponseBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,53 +33,49 @@ public class AccountsController {
 
     private final IAccountsService iAccountsService;
 
-    private ResponseEntity<ResponseDto> buildSuccessResponse(HttpStatus httpStatus, String status, String message){
-        return ResponseEntity.status(httpStatus).body(new ResponseDto(status, message));
-    }
-
     @Operation(summary = "Create Account", description = "Create a new Customer and Account")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created"),
-        @ApiResponse(responseCode = "409", description = "HTTP Status 409 Conflict", content=@Content(schema=@Schema(implementation=ErrorResponseDto.class)))
+        @ApiResponse(responseCode = "409", description = "HTTP Status 409 Conflict", content=@Content(schema=@Schema(implementation=ApiResponseDto.class)))
     })
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto){
+    public ResponseEntity<ApiResponseDto<Void>> createAccount(@Valid @RequestBody CustomerDto customerDto){
         iAccountsService.createAccount(customerDto);
-        return buildSuccessResponse(HttpStatus.CREATED, AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201);
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.CREATED, AccountsConstants.MESSAGE_201);
     }
 
     @Operation(summary = "Fetch Account details", description = "Fetch Customer and Account details based on the given mobile number")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK"),
-        @ApiResponse(responseCode = "400", description = "HTTP Status 400 Bad Request", content=@Content(schema=@Schema(implementation=ErrorResponseDto.class))),
-        @ApiResponse(responseCode = "404", description = "HTTP Status 404 Not Found", content=@Content(schema=@Schema(implementation=ErrorResponseDto.class)))
+        @ApiResponse(responseCode = "400", description = "HTTP Status 400 Bad Request", content=@Content(schema=@Schema(implementation=ApiResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "HTTP Status 404 Not Found", content=@Content(schema=@Schema(implementation=ApiResponseDto.class)))
     })
     @GetMapping("/fetch")
-    public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam @Pattern(regexp = "^\\d{11}$", message="Mobile number must be 11 digits")                                                     String mobileNumber){
+    public ResponseEntity<ApiResponseDto<CustomerDto>> fetchAccountDetails(@RequestParam @Pattern(regexp = "^\\d{11}$", message="Mobile number must be 11 digits")                                                     String mobileNumber){
         CustomerDto customerDto = iAccountsService.fetchAccount(mobileNumber);
-        return ResponseEntity.ok(customerDto);
+        return ApiResponseBuilder.buildSuccessResponse(HttpStatus.OK, AccountsConstants.MESSAGE_200, customerDto);
     }
 
     @Operation(summary = "Update Account details", description = "Update Customer and Account details based on the given account number")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK"),
-        @ApiResponse(responseCode = "400", description = "HTTP Status 400 Bad Request", content=@Content(schema=@Schema(implementation=ErrorResponseDto.class))),
-        @ApiResponse(responseCode = "404", description = "HTTP Status 404 Not Found", content=@Content(schema=@Schema(implementation=ErrorResponseDto.class)))
+        @ApiResponse(responseCode = "400", description = "HTTP Status 400 Bad Request", content=@Content(schema=@Schema(implementation=ApiResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "HTTP Status 404 Not Found", content=@Content(schema=@Schema(implementation=ApiResponseDto.class)))
     })
     @PostMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ApiResponseDto<Void>> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         iAccountsService.updateAccount(customerDto);
-        return buildSuccessResponse(HttpStatus.OK, AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200);
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, AccountsConstants.MESSAGE_200);
     }
 
     @Operation(summary = "Delete Customer and Account details", description = "Delete Customer and Account details based on the given mobile number")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK"),
-            @ApiResponse(responseCode = "404", description = "HTTP Status 404 Not Found", content=@Content(schema=@Schema(implementation=ErrorResponseDto.class)))
+            @ApiResponse(responseCode = "404", description = "HTTP Status 404 Not Found", content=@Content(schema=@Schema(implementation=ApiResponseDto.class)))
     })
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam @Pattern(regexp = "^\\d{11}$", message="Mobile number must be 11 digits")                                                         String mobileNumber) {
+    public ResponseEntity<ApiResponseDto<Void>> deleteAccountDetails(@RequestParam @Pattern(regexp = "^\\d{11}$", message="Mobile number must be 11 digits")                                                         String mobileNumber) {
         iAccountsService.deleteAccount(mobileNumber);
-        return buildSuccessResponse(HttpStatus.OK, AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200);
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, AccountsConstants.MESSAGE_200);
     }
 }

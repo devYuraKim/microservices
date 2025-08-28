@@ -6,7 +6,13 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
-
+/**
+ * @deprecated Use {@link ApiResponseDto} instead.
+ * This class only handled error responses and is no longer needed.
+ * ApiResponseDto supports both success and error responses with a consistent structure.
+ *
+ */
+@Deprecated
 @Schema(
     name = "Error Response",
     description = "Schema to represent error response"
