@@ -54,6 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request
     ) {
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .filter(e -> e.getDefaultMessage() != null)
                 .collect(Collectors.toMap(
                         FieldError::getField,
                         FieldError::getDefaultMessage
