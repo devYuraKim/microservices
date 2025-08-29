@@ -19,18 +19,63 @@
 
 ---
 
-## Docker Images & Running Services
-
+## Running Microservices
 각 마이크로서비스는 Docker 이미지로 패키징되어 Docker Hub에서 확인할 수 있습니다. 아래 명령어로 로컬 환경에서 실행 가능합니다.
 
-### Accounts Service
+<br>
+
+### Section 1: Docker Compose (Recommended)
+1. Make sure Docker and Docker Compose are installed.
+2. From the project root, run:
+``` sh
+docker-compose up -d
+```
+This will start all services in detached mode - runs all services in the background
+
+3. Verify all services are running:
+```sh
+docker-compose ps
+```
+You should see all containers listed with their respective ports.
+
+4. Test the services:
+#### Accounts Service
+```sh
+curl -X POST http://localhost:8080/api/create \
+     -H "Content-Type: application/json" \
+     -d '{
+           "name": "test",
+           "email": "test@mail.com",
+           "mobileNumber": "01012345678"
+         }'
+```
+#### Loans Service
+```sh
+curl -X POST "http://localhost:8090/api/create?mobileNumber=01012345678"
+```
+#### Cards Service
+```sh
+curl -X POST "http://localhost:9000/api/create?mobileNumber=01012345678"
+```
+5. Stop services and remove containers when done:
+```sh
+docker-compose down
+```
+<br>
+
+
+### Section 2: Individual Services (Optional)
+If you prefer, you can still run each microservice individually by pulling its Docker image from Docker Hub.
+> Note: This approach is useful if you only want to run a single service for testing or debugging.
+
+#### Accounts Service
 1. Run the Accounts service:
 ```sh
 docker pull yurakimyurakim/accounts:0.0.1-SNAPSHOT
 docker run -d -p 8080:8080 --name accounts yurakimyurakim/accounts:0.0.1-SNAPSHOT
 ```
 2. After running the container, test it:
-```
+```sh
 curl -X POST http://localhost:8080/api/create \
      -H "Content-Type: application/json" \
      -d '{
@@ -48,7 +93,7 @@ docker pull yurakimyurakim/loans:0.0.1-SNAPSHOT
 docker run -d -p 8090:8090 --name loans yurakimyurakim/loans:0.0.1-SNAPSHOT
 ```
 2. After running the container, test it:
-```
+```sh
 curl -X POST "http://localhost:8090/api/create?mobileNumber=01012345678"
 ```
 3. Expected: a response confirming the loan was created.
@@ -60,7 +105,7 @@ docker pull yurakimyurakim/cards:0.0.1-SNAPSHOT
 docker run -d -p 9000:9000 --name cards yurakimyurakim/cards:0.0.1-SNAPSHOT
 ```
 2. After running the container, test it:
-```
+```sh
 curl -X POST "http://localhost:9000/api/create?mobileNumber=01012345678"
 ```
 3. Expected: a response confirming the card was created.
