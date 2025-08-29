@@ -16,3 +16,52 @@
 - Spring Boot 기반 CRUD 및 Microservice 핵심 기능 이해  
 - 계층형 아키텍처 설계, 예외 처리, 감사, 환경별 기능 관리 등 핵심 패턴 적용  
 - API 문서화 및 테스트 수행으로 실제 서비스에 적용 가능한 수준 구현
+
+---
+
+## Docker Images & Running Services
+
+각 마이크로서비스는 Docker 이미지로 패키징되어 Docker Hub에서 확인할 수 있습니다. 아래 명령어로 로컬 환경에서 실행 가능합니다.
+
+### Accounts Service
+1. Run the Accounts service:
+```sh
+docker pull yurakimyurakim/accounts:0.0.1-SNAPSHOT
+docker run -d -p 8080:8080 --name accounts yurakimyurakim/accounts:0.0.1-SNAPSHOT
+```
+2. After running the container, test it:
+```
+curl -X POST http://localhost:8080/api/create \
+     -H "Content-Type: application/json" \
+     -d '{
+           "name": "test",
+           "email": "test@mail.com",
+           "mobileNumber": "01012345678"
+         }'
+```
+3. Expected: a response confirming the account was created.
+
+### Loans Service
+1. Run the Loans service:
+```sh
+docker pull yurakimyurakim/loans:0.0.1-SNAPSHOT
+docker run -d -p 8090:8090 --name loans yurakimyurakim/loans:0.0.1-SNAPSHOT
+```
+2. After running the container, test it:
+```
+curl -X POST "http://localhost:8090/api/create?mobileNumber=01012345678"
+```
+3. Expected: a response confirming the loan was created.
+
+### Cards Service
+1. Run the Cards service:
+```sh
+docker pull yurakimyurakim/cards:0.0.1-SNAPSHOT
+docker run -d -p 9000:9000 --name cards yurakimyurakim/cards:0.0.1-SNAPSHOT
+```
+2. After running the container, test it:
+```
+curl -X POST "http://localhost:9000/api/create?mobileNumber=01012345678"
+```
+3. Expected: a response confirming the card was created.
+
