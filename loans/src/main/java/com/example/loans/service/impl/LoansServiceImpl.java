@@ -42,7 +42,7 @@ public class LoansServiceImpl implements ILoansService {
     public void updateLoan(LoansDto loansDto) {
         Loans loans = loansRepository.findByLoanNumber(loansDto.getLoanNumber()).orElseThrow(
                 () -> new ResourceNotFoundException("Loan", "LoanNumber", loansDto.getLoanNumber()));
-        LoansMapper.mapToLoans(loansDto, loans);
+        LoansMapper.mapToLoansEntity(loansDto, loans);
         loansRepository.save(loans);
     }
 

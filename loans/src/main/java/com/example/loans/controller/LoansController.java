@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(
         name = "CRUD REST APIs for Loans",
-        description = "CREATE, FETCH, UPDATE and DELETE card details")
+        description = "CREATE, FETCH, UPDATE and DELETE loan details")
 @AllArgsConstructor
 @Validated
 @RestController
