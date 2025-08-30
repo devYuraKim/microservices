@@ -2,6 +2,7 @@ package com.example.cards.controller;
 
 import com.example.cards.constants.CardsConstants;
 import com.example.cards.dto.ApiResponseDto;
+import com.example.cards.dto.CardsContactInfoDto;
 import com.example.cards.dto.CardsDto;
 import com.example.cards.service.ICardsService;
 import com.example.cards.util.ApiResponseBuilder;
@@ -18,13 +19,19 @@ import org.springframework.web.bind.annotation.*;
 @Tag(
         name = "CRUD REST APIs for Cards",
         description = "CREATE, FETCH, UPDATE and DELETE Card details")
-@AllArgsConstructor
+//@AllArgsConstructor
 @Validated
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class CardsController {
 
     private final ICardsService iCardsService;
+    private final CardsContactInfoDto cardsContactInfoDto;
+
+    public CardsController(ICardsService iCardsService, CardsContactInfoDto cardsContactInfoDto) {
+        this.iCardsService = iCardsService;
+        this.cardsContactInfoDto = cardsContactInfoDto;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponseDto<Void>> createCard(@Valid @RequestParam @Pattern(regexp="(^$|[0-9]{11})",message = "Mobile number must be 11 digits") String mobileNumber) {
@@ -48,6 +55,21 @@ public class CardsController {
     public ResponseEntity<ApiResponseDto<Void>> deleteCardDetails(@RequestParam @Pattern(regexp="(^$|[0-9]{11})",message = "Mobile number must be 11 digits") String mobileNumber) {
         iCardsService.deleteCard(mobileNumber);
         return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, CardsConstants.MESSAGE_200);
+    }
+
+    @GetMapping("/build-info")
+    public ResponseEntity<ApiResponseDto<Void>> getBuildInfo(){
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, "Cards build info");
+    }
+
+    @GetMapping("/java-version")
+    public ResponseEntity<ApiResponseDto<Void>> getJavaVersion(){
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, "Cards java version️");
+    }
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<ApiResponseDto<CardsContactInfoDto>> getContactInfo(){
+        return ApiResponseBuilder.buildSuccessResponse(HttpStatus.OK, "Contact Info", cardsContactInfoDto);
     }
 
 }
