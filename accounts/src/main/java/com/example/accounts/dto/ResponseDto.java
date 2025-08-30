@@ -9,6 +9,7 @@ import lombok.Data;
  * This class only handled success responses and is no longer needed.
  * ApiResponseDto supports both success and error responses with a consistent structure.
  */
+@Deprecated
 @Schema(
     name = "Success Response",
     description = "Schema to represent successful response")
