@@ -1,6 +1,7 @@
 package com.example.accounts.controller;
 
 import com.example.accounts.constants.AccountsConstants;
+import com.example.accounts.dto.AccountsContactInfoDto;
 import com.example.accounts.dto.ApiResponseDto;
 import com.example.accounts.dto.CustomerDto;
 import com.example.accounts.service.IAccountsService;
@@ -15,6 +16,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +28,26 @@ import org.springframework.web.bind.annotation.*;
     name = "CRUD REST APIs for Accounts",
     description = "CREATE, FETCH, UPDATE and DELETE account details")
 @Slf4j
-@AllArgsConstructor
+
+//@AllArgsConstructor
 @Validated
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class AccountsController {
 
     private final IAccountsService iAccountsService;
+    private final Environment environment;
+    private final AccountsContactInfoDto accountsContactInfoDto;
+
+    public AccountsController(IAccountsService iAccountsService, Environment environment, AccountsContactInfoDto accountsContactInfoDto) {
+        this.iAccountsService = iAccountsService;
+        this.environment = environment;
+        this.accountsContactInfoDto = accountsContactInfoDto;
+    }
+
+    @Value("${build.version}")
+    private String buildVersion;
+
 
     @Operation(summary = "Create Account", description = "Create a new Customer and Account")
     @ApiResponses({
@@ -77,5 +93,20 @@ public class AccountsController {
     public ResponseEntity<ApiResponseDto<Void>> deleteAccountDetails(@RequestParam @Pattern(regexp = "^\\d{11}$", message="Mobile number must be 11 digits")                                                         String mobileNumber) {
         iAccountsService.deleteAccount(mobileNumber);
         return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, AccountsConstants.MESSAGE_200);
+    }
+
+    @GetMapping("/build-info")
+    public ResponseEntity<ApiResponseDto<Void>> getBuildInfo(){
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, buildVersion);
+    }
+
+    @GetMapping("/java-version")
+    public ResponseEntity<ApiResponseDto<Void>> getJavaVersion(){
+        return ApiResponseBuilder.buildSuccessResponseWithoutPayload(HttpStatus.OK, environment.getProperty("JAVA_HOME"));
+    }
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<ApiResponseDto<AccountsContactInfoDto>> getContactInfo(){
+        return ApiResponseBuilder.buildSuccessResponse(HttpStatus.OK, "Contact Info", accountsContactInfoDto);
     }
 }
