@@ -5,9 +5,16 @@ spring:
   application:
     name: "configserver"
   profiles:
-    active: native #Config Server will load configurations from the local file system or classpath, not from Git or a remote repository
+    #active: native #Config Server will load configurations from the local file system or classpath, not from Git or a remote repository
+    active: git
   cloud:
     config:
       server:
-        native: #backend type for Config Server backend (other options could be git, vault, etc.).
-          search-locations: "classpath:/config" #tells the Config Server where to look for configuration files.
+        git:
+          uri: git@github.com:devYuraKim/microservices-config.git
+          default-label: main
+          clone-on-start: true
+          force-pull: true
+          timeout: 5
+        #native: #backend type for Config Server backend (other options could be git, vault, etc.).
+          #search-locations: "classpath:/config" #tells the Config Server where to look for configuration files.
