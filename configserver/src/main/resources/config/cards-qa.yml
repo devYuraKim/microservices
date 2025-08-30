@@ -1,0 +1,12 @@
+build:
+  version: "2.0"
+
+#CardsContactInfoDto
+cards:
+  message: "Welcome to Cards QA"
+  contactDetails:
+    name: "Cards QA Lead"
+    email: "qa.cards@microservices.com"
+  onCallSupport:
+    - (02)2222-2222
+    - (02)2222-3333

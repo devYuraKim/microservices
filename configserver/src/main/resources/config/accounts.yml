@@ -1,0 +1,12 @@
+build:
+  version: "3.0"
+
+#AccountsContactInfoDto
+accounts:
+  message: "Welcome to Accounts Dev"
+  contactDetails:
+    name: "Accounts Dev"
+    email: "dev.accounts@microservices.com"
+  onCallSupport:
+    - (02)3333-3333
+    - (02)3333-4444

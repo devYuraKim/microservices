@@ -1,0 +1,12 @@
+build:
+  version: "1.0"
+
+#AccountsContactInfoDto
+accounts:
+  message: "Welcome to Accounts"
+  contactDetails:
+    name: "Accounts"
+    email: "accounts@microservices.com"
+  onCallSupport:
+    - (02)1111-1111
+    - (02)1111-2222

@@ -1,0 +1,12 @@
+build:
+  version: "1.0"
+
+#CardsContactInfoDto
+cards:
+  message: "Welcome to Cards"
+  contactDetails:
+    name: "Cards"
+    email: "cards@microservices.com"
+  onCallSupport:
+    - (02)1111-1111
+    - (02)1111-2222

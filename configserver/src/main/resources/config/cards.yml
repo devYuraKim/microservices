@@ -1,0 +1,12 @@
+build:
+  version: "3.0"
+
+#CardsContactInfoDto
+cards:
+  message: "Welcome to Cards Dev"
+  contactDetails:
+    name: "Cards Dev"
+    email: "dev.cards@microservices.com"
+  onCallSupport:
+    - (02)3333-3333
+    - (02)3333-4444

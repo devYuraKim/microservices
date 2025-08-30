@@ -1,0 +1,12 @@
+build:
+  version: "3.0"
+
+#LoansContactInfoDto
+loans:
+  message: "Welcome to Loans Dev"
+  contactDetails:
+    name: "Loans Dev"
+    email: "dev.loans@microservices.com"
+  onCallSupport:
+    - (02)3333-3333
+    - (02)3333-4444

@@ -4,8 +4,12 @@ server:
 
 # Spring
 spring:
+  application:
+    name: "cards"
   profiles:
-    active: dev
+    active: "prod"
+  config:
+    import: "optional:configserver:http://localhost:8071/"
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
