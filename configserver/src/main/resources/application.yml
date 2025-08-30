@@ -1,0 +1,13 @@
+server:
+  port: 8071
+
+spring:
+  application:
+    name: "configserver"
+  profiles:
+    active: native #Config Server will load configurations from the local file system or classpath, not from Git or a remote repository
+  cloud:
+    config:
+      server:
+        native: #backend type for Config Server backend (other options could be git, vault, etc.).
+          search-locations: "classpath:/config" #tells the Config Server where to look for configuration files.
