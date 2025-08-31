@@ -2,7 +2,7 @@ services:
 
   network-deploy-service: #for RabbitMQ
     networks:
-      -microservices
+      - microservices
 
   microservice-base-config: #for microservices
     extends:
