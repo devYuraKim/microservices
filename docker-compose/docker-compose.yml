@@ -1,28 +1,59 @@
 services:
-#1.configserver
+  #0.rabbitMQ
+  rabbit:
+    image: rabbitmq:4-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostic check_port_connectivity
+      start_period: 5s
+      timeout: 5s
+      interval: 10s
+      retries: 10
+    networks:
+      - microservices
+
+  #1.configserver
   configserver:
     image: yurakimyurakim/configserver:0.1.0-SNAPSHOT
     container_name: configserver
     ports:
-      - 8071:8071
+      - "8071:8071"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    healthcheck:
+      test: |
+        STATUS=$(curl --fail --silent --show-error localhost:8071/actuator/health/readiness || echo "DOWN")
+        echo "$STATUS" | grep -q "UP" || exit 1
+      start_period: 20s #wait before starting health check
+      retries: 10 #tries before marking container unhealthy
+      interval: 10s #wait between each check
+      timeout: 5s #fail the check if it takes longer
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: 1.0
           memory: 512m
     networks:
       - microservices
-#2.accounts
+
+  #2.accounts
   accounts:
     image: yurakimyurakim/accounts:0.1.0-SNAPSHOT
     container_name: accounts
     ports:
-      - 8080:8080
+      - "8080:8080"
+    depends_on:
+      configserver:
+        condition: service_healthy
     mem_limit: 512m
     deploy:
       resources:
         limits:
-          cpus: "1.0" #prevent container cpu usage spike
+          cpus: 1.0 #prevent container cpu usage spike
           memory: 512m
     networks:
       - microservices
@@ -30,16 +61,20 @@ services:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
       SPRING_PROFILE_ACTIVE: default
       #SPRING_APPLICATION_NAME: accounts
-#3.loans
+
+  #3.loans
   loans:
     image: yurakimyurakim/loans:0.1.0-SNAPSHOT
     container_name: loans
     ports:
-      - 8090:8090
+      - "8090:8090"
+    depends_on:
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: 1.0
           memory: 512m
     networks:
       - microservices
@@ -47,16 +82,20 @@ services:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
       SPRING_PROFILE_ACTIVE: default
       #SPRING_APPLICATION_NAME: loans
-#4.cards
+
+  #4.cards
   cards:
     image: yurakimyurakim/cards:0.1.0-SNAPSHOT
     container_name: cards
     ports:
-      - 9000:9000
+      - "9000:9000"
+    depends_on:
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: 1.0
           memory: 512m
     networks:
       - microservices
