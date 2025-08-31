@@ -7,8 +7,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     healthcheck:
-      test: rabbitmq-diagnostic check_port_connectivity
-      start_period: 5s
+      test: rabbitmq-diagnostics check_port_connectivity
+      start_period: 20s
       timeout: 5s
       interval: 10s
       retries: 10
@@ -22,17 +22,23 @@ services:
     container_name: configserver
     ports:
       - "8071:8071"
+    volumes:
+      # Mount SSH private key (read-only) for Git authentication(Proves my identity to GitHub)
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+      # Mount known_hosts to validate GitHub server's fingerprint(Ensures I'm talking to GitHub)
+      - ~/.ssh/known_hosts:/root/.ssh/known_hosts:ro
+    environment:
+      # Disable SSH agent forwarding inside container; force use of mounted id_rsa
+      - SSH_AUTH_SOCK=
     depends_on:
       rabbit:
         condition: service_healthy
     healthcheck:
-      test: |
-        STATUS=$(curl --fail --silent --show-error localhost:8071/actuator/health/readiness || echo "DOWN")
-        echo "$STATUS" | grep -q "UP" || exit 1
-      start_period: 20s #wait before starting health check
-      retries: 10 #tries before marking container unhealthy
-      interval: 10s #wait between each check
-      timeout: 5s #fail the check if it takes longer
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      start_period: 30s #increased for SSH setup
+      retries: 10
+      interval: 10s
+      timeout: 5s
     extends:
       file: common-config.yml
       service: microservice-base-config
