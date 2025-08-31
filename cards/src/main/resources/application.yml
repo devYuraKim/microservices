@@ -27,6 +27,12 @@ spring:
     ansi:
       enabled: always
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 # Logging TRACE < DEBUG < INFO < WARN < ERROR
 logging:
   level:
