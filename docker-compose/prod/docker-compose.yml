@@ -45,7 +45,7 @@ services:
 
   #2.accounts
   accounts:
-    image: yurakimyurakim/accounts:0.1.0-SNAPSHOT
+    image: yurakimyurakim/accounts:0.2.0-SNAPSHOT
     container_name: accounts
     ports:
       - "8080:8080"
@@ -60,7 +60,7 @@ services:
 
   #3.loans
   loans:
-    image: yurakimyurakim/loans:0.1.0-SNAPSHOT
+    image: yurakimyurakim/loans:0.2.0-SNAPSHOT
     container_name: loans
     ports:
       - "8090:8090"
@@ -75,7 +75,7 @@ services:
 
   #4.cards
   cards:
-    image: yurakimyurakim/cards:0.1.0-SNAPSHOT
+    image: yurakimyurakim/cards:0.2.0-SNAPSHOT
     container_name: cards
     ports:
       - "9000:9000"

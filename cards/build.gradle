@@ -6,8 +6,8 @@ plugins {
 }
 
 group = 'com.microservices'
-version = '0.1.0-SNAPSHOT'
-description = 'Microservice for Cards'
+version = '0.2.0-SNAPSHOT'
+description = 'Microservice for Cards with MySQL'
 
 java {
     toolchain {

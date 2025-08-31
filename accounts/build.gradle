@@ -6,8 +6,8 @@ plugins {
 }
 
 group = 'com.microservices'
-version = '0.1.0-SNAPSHOT'
-description = 'Microservice for Accounts'
+version = '0.2.0-SNAPSHOT'
+description = 'Microservice for Accounts with MySQL'
 
 java {
 	toolchain {
