@@ -21,6 +21,17 @@ spring:
           timeout: 5
         #native: #backend type for Config Server backend (other options could be git, vault, etc.).
           #search-locations: "classpath:/config" #tells the Config Server where to look for configuration files.
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 encrypt:
   key: 8EA3A21EAF5998FDCCECF6EF41BB8
