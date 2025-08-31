@@ -1,9 +1,12 @@
+# no quotes: safe for simple words/numbers
+# "": allows escaping(\n \t). if the value has special characters( :, @, #) to avoid YML misinterpretation
+# '': no escaping
 server:
   port: 8071
 
 spring:
   application:
-    name: "configserver"
+    name: configserver
   profiles:
     #active: native #Config Server will load configurations from the local file system or classpath, not from Git or a remote repository
     active: git
@@ -11,10 +14,13 @@ spring:
     config:
       server:
         git:
-          uri: git@github.com:devYuraKim/microservices-config.git
+          uri: "git@github.com:devYuraKim/microservices-config.git"
           default-label: main
           clone-on-start: true
           force-pull: true
           timeout: 5
         #native: #backend type for Config Server backend (other options could be git, vault, etc.).
           #search-locations: "classpath:/config" #tells the Config Server where to look for configuration files.
+
+encrypt:
+  key: 8EA3A21EAF5998FDCCECF6EF41BB8
