@@ -51,7 +51,6 @@ cd docker-compose/<profile>  # default, qa, prod
 
 # 해당 프로필의 모든 서비스 실행
 docker compose up -d
-
 ```
 > ⚠️ 각 프로필 디렉토리 안에서 실행해야 해당 프로필에 맞는 설정과 컨테이너가 올바르게 실행됩니다.
 
