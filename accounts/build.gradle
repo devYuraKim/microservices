@@ -9,6 +9,13 @@ group = 'com.microservices'
 version = '0.2.0-SNAPSHOT'
 description = 'Microservice for Accounts with MySQL'
 
+//replace placeholders during build
+processResources {
+    filesMatching("**/application.yml") {
+        expand(project.properties)
+    }
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
@@ -52,6 +59,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 
 dependencyManagement {

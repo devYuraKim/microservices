@@ -33,6 +33,28 @@ management:
     web:
       exposure:
         include: "*"
+  endpoint:
+    shutdown:
+      access: unrestricted #shutdown
+  info:
+    env:
+      enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true #no DNS mapping available in local system, so use ip address
+  client:
+    fetchRegistry: true #fetch registry information to communicate with other services
+    registerWithEureka: true #register in registry on start up
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
+
+# management:info
+info:
+  app:
+    name: accounts
+    description: accounts application
+    version: ${version}
 
 # Logging TRACE < DEBUG < INFO < WARN < ERROR
 logging:
