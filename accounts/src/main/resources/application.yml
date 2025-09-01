@@ -5,9 +5,9 @@ server:
 # Spring
 spring:
   application:
-    name: "accounts"
+    name: accounts
   profiles:
-    active: "prod"
+    active: prod
   config:
     import: "optional:configserver:http://localhost:8071/" #config가 없어도 service 실행 가능
   rabbitmq: #docker
@@ -52,9 +52,9 @@ eureka:
 # management:info
 info:
   app:
-    name: accounts
-    description: accounts application
-    version: ${version}
+    name: ${name} #set in settings.gradle
+    description: ${name} application
+    version: ${version} #set in build.gradle processResources()
 
 # Logging TRACE < DEBUG < INFO < WARN < ERROR
 logging:
