@@ -15,6 +15,7 @@
 
 ### Deployment & Configuration
 - Dockerized microservices with Docker Compose, allowing easy local execution
+- Each microservice has its own isolated DB, automatically created and configured via Docker Compose.
 - Spring Cloud Config Server for centralized configuration management per profile (default, qa, prod)
 - Automatic configuration refresh via GitHub Webhook → Config Server → Spring Cloud Bus + RabbitMQ
    - Private GitHub repo access via SSH authentication
@@ -54,7 +55,20 @@ docker compose up -d
 ```
 > ⚠️ 각 프로필 디렉토리 안에서 실행해야 해당 프로필에 맞는 설정과 컨테이너가 올바르게 실행됩니다.
 
-**3. 자동 설정(config) 갱신 확인**
+**3. 실행될 컨테이너 목록**
+- `accounts` (Spring Boot microservice)
+- `loans` (Spring Boot microservice)
+- `cards` (Spring Boot microservice)
+- `cofigserver` (Spring Cloud Config Server)
+- `rabbit` (RabbitMQ - message broker for config refresh)
+- `accountsdb` (DB for accounts service)
+- `loansdb` (DB for loans service)
+- `cardsdb` (DB for cards service)
+> ⚠️ Startup order: `rabbit`(RabbitMQ) → `configserver` → microservices. Docker Compose handles this automatically.
+
+> Note: Each microservice’s database tables are automatically created when the container starts, so no manual setup is needed.
+
+**4. 자동 설정(config) 갱신 확인**
 - GitHub 저장소(private)에서 설정 파일(application.yml) 변경
 - Webhook → Spring Cloud Config Server → Spring Cloud Bus + RabbitMQ → 모든 서비스로 변경 사항 전파
 - 서비스에서 동일한 요청 수행 → 변경된 설정 적용
