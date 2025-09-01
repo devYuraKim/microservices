@@ -1,2 +1,2 @@
 rootProject.name = "microservices"
-include "accounts", "loans", "cards", "configserver"
+include "accounts", "loans", "cards", "configserver", "eurekaserver"
