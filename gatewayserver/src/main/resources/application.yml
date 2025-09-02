@@ -9,7 +9,9 @@ spring:
         webflux:
           discovery: #connect with discovery server = eureka server
             locator: #locate all the services registered with eureka server
-              enabled: true
+              enabled: false #only show configured filters
+              lower-case-service-id: true
+
   #not sure if rabbitmq should be kept or not
 #  rabbitmq:
 #    host: localhost
