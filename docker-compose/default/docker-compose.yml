@@ -126,6 +126,20 @@ services:
       file: common-config.yml
       service: microservice-config
 
+  loans2:
+    image: yurakimyurakim/loans:0.3.0-SNAPSHOT
+    container_name: loans2
+    ports:
+      - "8091:8090"
+    depends_on:
+      loansdb:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
+    extends:
+      file: common-config.yml
+      service: microservice-config
+
   #5.cards
   cards:
     image: yurakimyurakim/cards:0.3.0-SNAPSHOT
