@@ -15,11 +15,12 @@ A production-ready Spring Boot microservices ecosystem featuring automated confi
 - **Audit Trail** via Base Entity for automatic created/modified timestamps and user tracking
 - **Feature Toggles** using Spring Profiles for environment-specific behavior
 - **Auto-Generated Documentation** with `springdoc-openapi`
+- **Service Registry & Client-Side Load Balancing** with Eureka Server
 
 ### 🚀 Deployment & Configuration
 
 **Container Orchestration**
-- **Dockerized Microservices** with Docker Compose for seamless local execution
+- **Dockerized services** with Docker Compose for seamless local execution
 - **Dedicated Database** - Each microservice maintains its own dedicated database
 - **Automatic Database Setup** - Databases automatically created and configured via Docker Compose
 
@@ -35,6 +36,7 @@ A production-ready Spring Boot microservices ecosystem featuring automated confi
 ✅ **DevOps Automation** - Achieved fully automated configuration management with live updates  
 ✅ **Environment Management** - Profile-based execution across development, QA, and production  
 ✅ **Container Orchestration** - Complete containerization of microservices, databases, Config Server, and RabbitMQ, enabling consistent, scalable deployments
+✅ **Service Discovery** - Established a centralized service registry with Eureka and achieved client-side load balancing.
 
 ---
 
@@ -66,20 +68,25 @@ docker compose up -d
 **Container Services**
 The following containers will be deployed:
 
-| Service | Description | Port |
-|---------|-------------|------|
-| `accounts` | Accounts microservice | 8080:8080 |
-| `loans` | Loans microservice | 8090:8090 |
-| `cards` | Cards microservice | 9000:9000 |
-| `configserver` | Spring Cloud Config Server | 8071:8071 |
-| `rabbit` | RabbitMQ message broker | 5672:5672, 15672:15672 |
-| `accountsdb` | MySQL for accounts service | 3306:3306 |
-| `loansdb` | MySQL for loans service | 3307:3306 |
-| `cardsdb` | MySQL for cards service | 3308:3306 |
+| Service        | Description | Port                   |
+|----------------|-------------|------------------------|
+| `rabbitmq`     | RabbitMQ message broker | 5672:5672, 15672:15672 |
+| `configserver` | Spring Cloud Config Server | 8071:8071              |
+| `eurekaserver` | Eureka Server for Service Registry | 8070:8070              |
+| `accountsdb`   | MySQL for accounts service | 3306:3306              |
+| `loansdb`      | MySQL for loans service | 3307:3306              |
+| `cardsdb`      | MySQL for cards service | 3308:3306              |
+| `accounts`     | Accounts microservice | 8080:8080              |
+| `loans`        | Loans microservice | 8090:8090              |
+| `cards`        | Cards microservice | 9000:9000              |
 
 > ⚠️ Note: Each MySQL container uses the default container port `3306`, but the host ports are mapped differently (`3306`, `3307`, `3308`) to allow multiple databases to run simultaneously without conflicts.
 
-> 📋 **Startup Order**: `rabbit` → `configserver` → microservices (handled automatically by Docker Compose)
+> 📋 **Startup Order**: 
+> - **Core Infrastructure**: `rabbitmq` → `configserver` → `eurekaserver`
+> - **Databases**: all database containers (`accountsdb`, `loansdb`, `cardsdb`)
+> - **Microservices**: all microservices (`accounts`, `loans`, `cards`) 
+> - **Note**:  This order is managed automatically by Docker Compose using `depends_on rules`. For manual execution, ensure the **core infrastructure** and the **databases** are started before the microservices.
 
 > 💡 **Auto-Setup**: Database tables are automatically created when containers start - no manual configuration required.
 
@@ -123,6 +130,10 @@ docker-compose down
 docker-compose down -v
 ```
 
+### Eureka Server Testing
+* **Access the Eureka Dashboard**: After starting all services, open your web browser and navigate to `http://localhost:8070`.
+* **Verify Service Registration**: On the dashboard, confirm that your microservices (`ACCOUNTS`, `LOANS`, `CARDS`) are listed under "Instances currently registered with Eureka" and are showing a status of `UP`.
+
 ---
 
 ## 🔗 Additional Resources
@@ -136,6 +147,7 @@ docker-compose down -v
 - **Framework**: Spring Boot, Spring Cloud
 - **Configuration**: Spring Cloud Config Server
 - **Messaging**: RabbitMQ, Spring Cloud Bus  
+- **Service Registry**: Eureka Server
 - **Containerization**: Docker, Docker Compose
 - **Databases**: MySQL (isolated per service)
 - **Documentation**: OpenAPI 3.0
