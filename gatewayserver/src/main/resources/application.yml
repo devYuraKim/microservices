@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: gatewayserver
+  config: #establish link between gatewayserver and configserver
+    import: "optional:configserver:http://localhost:8071/"
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery: #connect with discovery server = eureka server
+            locator: #locate all the services registered with eureka server
+              enabled: true
+  #not sure if rabbitmq should be kept or not
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+  output:
+    ansi:
+      enabled: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+
+# eureka to be maintained in configserver
+
+# management:info
+info:
+  app:
+    name: ${name} #set in settings.gradle
+    description: ${name} application
+    version: ${version} #set in build.gradle processResources()
+
+# Logging TRACE < DEBUG < INFO < WARN < ERROR
+logging:
+  level:
+    root: INFO
