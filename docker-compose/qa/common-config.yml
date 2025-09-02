@@ -1,12 +1,17 @@
 services:
 
-  network-deploy-service: #for RabbitMQ
+  microservice-network-base:
     networks:
       - microservices
+    deploy:
+      resources:
+        limits:
+          cpus: 1.0
+          memory: 512m
 
   microservice-db-config:
     extends:
-      service: network-deploy-service
+      service: microservice-network-base
     image: mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -17,22 +22,25 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
 
-  microservice-base-config: #for microservices
+  microservice-spring-base:
     extends:
-      service: network-deploy-service
-    deploy:
-      resources:
-        limits:
-          cpus: 1.0
-          memory: 512m
+      service: microservice-network-base
     environment:
-      SPRING_RABBITMQ_HOST: rabbit
+      SPRING_PROFILES_ACTIVE: default
 
-  microservice-configserver-config:
+  microservice-config:
     extends:
-      service: microservice-base-config
+      service: microservice-spring-base
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: qa
+      SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root

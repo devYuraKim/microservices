@@ -31,7 +31,7 @@ services:
       service: microservice-db-config
 
   #0.rabbitMQ
-  rabbit:
+  rabbitmq:
     image: rabbitmq:4-management
     hostname: rabbitmq
     ports:
@@ -39,17 +39,17 @@ services:
       - "15672:15672"
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
-      start_period: 20s
+      start_period: 30s
       timeout: 5s
       interval: 10s
       retries: 10
     extends:
       file: common-config.yml
-      service: network-deploy-service
+      service: microservice-network-base
 
   #1.configserver
   configserver:
-    image: yurakimyurakim/configserver:0.1.0-SNAPSHOT
+    image: yurakimyurakim/configserver:0.3.0-SNAPSHOT
     container_name: configserver
     ports:
       - "8071:8071"
@@ -61,8 +61,9 @@ services:
     environment:
       # Disable SSH agent forwarding inside container; force use of mounted id_rsa
       - SSH_AUTH_SOCK=
+      - SPRING_RABBITMQ_HOST=rabbitmq
     depends_on:
-      rabbit:
+      rabbitmq:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
@@ -72,59 +73,73 @@ services:
       timeout: 5s
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-spring-base
 
-  #2.accounts
+  #2.eurekaserver
+  eurekaserver:
+    image: yurakimyurakim/eurekaserver:0.3.0-SNAPSHOT
+    container_name: eurekaserver
+    ports:
+      - "8070:8070"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    healthcheck:
+      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      start_period: 10s
+      retries: 10
+      interval: 10s
+      timeout: 5s
+    extends:
+      file: common-config.yml
+      service: microservice-spring-base
+
+  #3.accounts
   accounts:
-    image: yurakimyurakim/accounts:0.2.0-SNAPSHOT
+    image: yurakimyurakim/accounts:0.3.0-SNAPSHOT
     container_name: accounts
     ports:
       - "8080:8080"
     depends_on:
-      configserver:
-        condition: service_healthy
       accountsdb:
         condition: service_healthy
-    extends:
-      file: common-config.yml
-      service: microservice-configserver-config
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
+    extends: #networks, deploy:resources:limits, environment: SPRING_RABBITMQ_HOST, SPRING_CONFIG_IMPORT, EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE, SPRING_PROFILES_ACTIVE, SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD
+      file: common-config.yml
+      service: microservice-config
 
-
-  #3.loans
+  #4.loans
   loans:
-    image: yurakimyurakim/loans:0.2.0-SNAPSHOT
+    image: yurakimyurakim/loans:0.3.0-SNAPSHOT
     container_name: loans
     ports:
       - "8090:8090"
     depends_on:
-      configserver:
-        condition: service_healthy
       loansdb:
         condition: service_healthy
-    extends:
-      file: common-config.yml
-      service: microservice-configserver-config
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
+    extends:
+      file: common-config.yml
+      service: microservice-config
 
-  #4.cards
+  #5.cards
   cards:
-    image: yurakimyurakim/cards:0.2.0-SNAPSHOT
+    image: yurakimyurakim/cards:0.3.0-SNAPSHOT
     container_name: cards
     ports:
       - "9000:9000"
     depends_on:
-      configserver:
-        condition: service_healthy
       cardsdb:
         condition: service_healthy
-    extends:
-      file: common-config.yml
-      service: microservice-configserver-config
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsdb"
+    extends:
+      file: common-config.yml
+      service: microservice-config
 
 networks:
   microservices:
