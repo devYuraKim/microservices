@@ -4,6 +4,6 @@ import com.example.accounts.dto.CustomerDetailsDto;
 
 public interface ICustomerDetailsService {
 
-    CustomerDetailsDto fetchCustomerDetails(String mobileNumber);
+    CustomerDetailsDto fetchCustomerDetails(String mobileNumber, String correlationId);
 
 }

@@ -9,7 +9,8 @@ import com.example.loans.util.ApiResponseBuilder;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class LoansController {
 
     private final ILoansService iLoansService;
     private final LoansContactInfoDto loansContactInfoDto;
+    private final static Logger logger = LoggerFactory.getLogger(LoansController.class);
 
     public LoansController(ILoansService iLoansService, LoansContactInfoDto loansContactInfoDto) {
         this.iLoansService = iLoansService;
@@ -40,7 +42,10 @@ public class LoansController {
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<ApiResponseDto<LoansDto>> fetchLoanDetails(@RequestParam @Pattern(regexp = "(^$|[0-9]{11})", message = "Mobile number must be 11 digits") String mobileNumber) {
+    public ResponseEntity<ApiResponseDto<LoansDto>> fetchLoanDetails(
+            @RequestHeader("microservices-correlation-id") String correlationId,
+            @RequestParam @Pattern(regexp = "(^$|[0-9]{11})", message = "Mobile number must be 11 digits") String mobileNumber) {
+        logger.debug("microservices-correlation-id found{}", correlationId);
         LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);
         return ApiResponseBuilder.buildSuccessResponse(HttpStatus.OK,LoansConstants.MESSAGE_200,loansDto);
     }

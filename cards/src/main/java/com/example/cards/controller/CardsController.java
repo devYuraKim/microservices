@@ -9,7 +9,8 @@ import com.example.cards.util.ApiResponseBuilder;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class CardsController {
 
     private final ICardsService iCardsService;
     private final CardsContactInfoDto cardsContactInfoDto;
+    private final static Logger logger = LoggerFactory.getLogger(CardsController.class);
 
     public CardsController(ICardsService iCardsService, CardsContactInfoDto cardsContactInfoDto) {
         this.iCardsService = iCardsService;
@@ -40,7 +42,10 @@ public class CardsController {
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<ApiResponseDto<CardsDto>> fetchCardDetails(@RequestParam @Pattern(regexp="(^$|[0-9]{11})",message = "Mobile number must be 11 digits") String mobileNumber) {
+    public ResponseEntity<ApiResponseDto<CardsDto>> fetchCardDetails(
+            @RequestHeader("microservices-correlation-id") String correlationId,
+            @RequestParam @Pattern(regexp="(^$|[0-9]{11})",message = "Mobile number must be 11 digits") String mobileNumber) {
+        logger.debug("microservices-correlation-id found{}", correlationId);
         CardsDto cardsDto = iCardsService.fetchCard(mobileNumber);
         return ApiResponseBuilder.buildSuccessResponse(HttpStatus.OK, CardsConstants.MESSAGE_200, cardsDto);
     }
