@@ -46,4 +46,4 @@ info:
 # Logging TRACE < DEBUG < INFO < WARN < ERROR
 logging:
   level:
-    root: INFO
+    root: DEBUG

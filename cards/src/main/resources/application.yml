@@ -59,4 +59,6 @@ info:
 # Logging TRACE < DEBUG < INFO < WARN < ERROR
 logging:
   level:
-    root: INFO
+    com:
+      example:
+        cards: DEBUG
