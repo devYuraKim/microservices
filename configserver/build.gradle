@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.4.0-SNAPSHOT'
+version = '0.6.0-SNAPSHOT'
 description = 'Config Server for Microservices'
 
 java {

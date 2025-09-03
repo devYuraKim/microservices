@@ -6,8 +6,8 @@ plugins {
 }
 
 group = 'com.microservices'
-version = '0.4.0-SNAPSHOT'
-description = 'Microservice for Cards with MySQL'
+version = '0.6.0-SNAPSHOT'
+description = 'Microservice for Cards with Gateway'
 
 //replace placeholders during build
 processResources {

@@ -6,8 +6,8 @@ plugins {
 }
 
 group = 'com.microservices'
-version = '0.4.0-SNAPSHOT'
-description = 'Microservice for Accounts with MySQL'
+version = '0.6.0-SNAPSHOT'
+description = 'Microservice for Accounts with Gateway'
 
 //replace placeholders during build
 processResources {
