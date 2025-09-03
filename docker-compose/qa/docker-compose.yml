@@ -49,7 +49,7 @@ services:
 
   #1.configserver
   configserver:
-    image: yurakimyurakim/configserver:0.4.0-SNAPSHOT
+    image: yurakimyurakim/configserver:0.6.0-SNAPSHOT
     container_name: configserver
     ports:
       - "8071:8071"
@@ -77,7 +77,7 @@ services:
 
   #2.eurekaserver
   eurekaserver:
-    image: yurakimyurakim/eurekaserver:0.4.0-SNAPSHOT
+    image: yurakimyurakim/eurekaserver:0.6.0-SNAPSHOT
     container_name: eurekaserver
     ports:
       - "8070:8070"
@@ -96,12 +96,34 @@ services:
       file: common-config.yml
       service: microservice-spring-base
 
+  gatewayserver:
+    image: yurakimyurakim/gatewayserver:0.6.0-SNAPSHOT
+    container_name: gatewayserver
+    ports:
+      - "8072:8072"
+    depends_on:
+      accounts:
+        condition: service_healthy
+      loans:
+        condition: service_healthy
+      cards:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservice-config
+
   #3.accounts
   accounts:
-    image: yurakimyurakim/accounts:0.4.0-SNAPSHOT
+    image: yurakimyurakim/accounts:0.6.0-SNAPSHOT
     container_name: accounts
     ports:
       - "8080:8080"
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      start_period: 10s
+      retries: 10
+      interval: 10s
+      timeout: 5s
     depends_on:
       accountsdb:
         condition: service_healthy
@@ -113,10 +135,16 @@ services:
 
   #4.loans
   loans:
-    image: yurakimyurakim/loans:0.4.0-SNAPSHOT
+    image: yurakimyurakim/loans:0.6.0-SNAPSHOT
     container_name: loans
     ports:
       - "8090:8090"
+    healthcheck:
+      test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
+      start_period: 10s
+      retries: 10
+      interval: 10s
+      timeout: 5s
     depends_on:
       loansdb:
         condition: service_healthy
@@ -128,10 +156,16 @@ services:
 
   #5.cards
   cards:
-    image: yurakimyurakim/cards:0.4.0-SNAPSHOT
+    image: yurakimyurakim/cards:0.6.0-SNAPSHOT
     container_name: cards
     ports:
       - "9000:9000"
+    healthcheck:
+      test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
+      start_period: 10s
+      retries: 10
+      interval: 10s
+      timeout: 5s
     depends_on:
       cardsdb:
         condition: service_healthy
