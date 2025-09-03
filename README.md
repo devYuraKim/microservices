@@ -33,12 +33,12 @@ A production-ready Spring Boot microservices ecosystem featuring automated confi
 
 ### 🎯 Key Achievements
 
-✅ **Microservice Patterns** - Implemented layered architecture (Controller → Service → Repository), DTO separation, exception handling, and auditing.  
-✅ **DevOps Automation** - Achieved fully automated configuration management with live updates  
-✅ **Environment Management** - Profile-based execution across development, QA, and production  
-✅ **Container Orchestration** - Complete containerization of microservices, databases, Config Server, and RabbitMQ, enabling consistent, scalable deployments
-✅ **Service Discovery** - Established a centralized service registry with Eureka and achieved client-side load balancing.
-✅ **API Gateway** - Implemented centralized entry point with Spring Cloud Gateway for unified routing and security
+- **✅ Microservice Patterns** - Implemented layered architecture (Controller → Service → Repository), DTO separation, exception handling, and auditing.  
+- **✅ DevOps Automation** - Achieved fully automated configuration management with live updates  
+- **✅ Environment Management** - Profile-based execution across development, QA, and production  
+- **✅ Container Orchestration** - Complete containerization of microservices, databases, Config Server, and RabbitMQ, enabling consistent, scalable deployments
+- **✅ Service Discovery** - Established a centralized service registry with Eureka and achieved client-side load balancing.
+- **✅ API Gateway** - Implemented centralized entry point with Spring Cloud Gateway for unified routing and security
 ---
 
 ## 🚀 Running the Microservices
