@@ -2,7 +2,7 @@
 
 **Learning Period**: 2025.08.24 - 2025.09.03
 
-A production-ready Spring Boot microservices ecosystem featuring automated configuration management, containerized deployment, and zero-downtime configuration updates.
+A Spring Boot microservices ecosystem featuring automated configuration management, containerized deployment, and zero-downtime configuration updates.
 
 ## 📋 Project Summary
 
@@ -67,6 +67,7 @@ docker compose up -d
 > ⚠️ **Important**: Execute commands from within the specific profile directory to ensure correct configuration and container deployment.
 
 **Container Services**
+
 The following containers will be deployed:
 
 | Service         | Description                        | Port                   |
@@ -101,6 +102,8 @@ The following containers will be deployed:
 
 > ⚠️ **SSH Access Required**: To test automatic refresh functionality, ensure GitHub SSH access is properly configured.
 
+<br> 
+
 ### Gateway-Routed Service Testing
 
 **Accounts Service**
@@ -129,6 +132,7 @@ curl -X POST "http://localhost:8072/microservices/cards/api/create?mobileNumber=
 curl -X GET "http://localhost:8072/microservices/accounts/api/fetchCustomerDetails?mobileNumber=01012345678"
 ```
 > 📝 **Note**: The `fetchCustomerDetails` endpoint demonstrates a composite service pattern, likely aggregating data from multiple microservices (accounts, loans, cards) through the gateway.
+
 **Cleanup**
 ```bash
 # Stop services and remove containers
